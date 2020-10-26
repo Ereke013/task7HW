@@ -4,10 +4,11 @@
 
 <div layout:fragment="site_content">
     <div class="row mt-3">
+
         <div class="col-sm-3">
             <div class="card">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><a href="#"><span th:text="#{label.allItems}"></span><i
+                    <li class="list-group-item"><a th:href="@{'/'}"><span th:text="#{label.allItems}"></span><i
                             class="fas fa-shopping-cart ml-2"></i></a></li>
                     <li class="list-group-item"><a href="#"><span th:text="#{label.phones}"></span> <i
                             class="fas fa-mobile-alt ml-2"></i></a></li>
@@ -25,6 +26,7 @@
                 </ul>
             </div>
         </div>
+
         <div class="col-sm-9">
             <div id="demo" class="carousel slide" data-ride="carousel">
 
@@ -74,14 +76,17 @@
                     <span class="carousel-control-next-icon"></span>
                 </a>
             </div>
-
+            <button type="button" class="btn btn-primary mt-3" data-toggle="modal" id="addNew"
+                    data-target="#staticBackdrop" th:text="#{button.addItem}">
+            </button>
             <div class="row mt-3">
                 <div class="col-sm-4" th:each="item : ${items}">
-                    <div class="card mt-3" style="height: 380px;">
-                        <img th:src="${item.getPictureUrl()}" class="card-img-top" style=" width: 100%; height: 190px"
+                    <div class="card mt-3" style="min-height: 400px;">
+                        <img th:src="${item.getPictureUrl()}" class="card-img-top mt-1" style=" width: 100%; height: 190px"
                              alt="...">
                         <div class="card-body">
-                            <h5 class="card-title" th:text="${item.getName()}"></h5>
+                            <a th:href="@{'/'}"><h5 class="card-title" th:text="${item.getName()}"></h5></a>
+                            <h5>$<span th:text="${item.getPrice()}"></span>.99</h5>
                             <p class="card-text" th:text="${item.getDescription()}"></p>
                         </div>
                         <div class="card-footer">
@@ -95,5 +100,52 @@
             </div>
         </div>
     </div>
+    <form th:action="@{'/addItem'}" method="post">
+        <div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1"
+             aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.newItem}"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label th:text="#{label.itemName}"></label>
+                            <input type="text" name="item_name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemDescription}"></label>
+                            <textarea class="form-control" rows="5" name="item_description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemPrice}"></label>
+                            <input type="number" name="item_price" class="form-control" required>
+<!--                            <label style="font-size: 12px; color: #8c8685">year-month-date</label>-->
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemAmount}"></label>
+                            <input type="number" name="item_amount" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemStar}"></label>
+                            <input type="number" name="item_star" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label th:text="#{label.itemPicture}"></label>
+                            <input type="text" name="item_picture" class="form-control">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" th:text="#{button.close}"></button>
+                        <button type="submit" class="btn btn-primary" th:text="#{button.add}"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
 </div>
 </html>

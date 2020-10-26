@@ -9,3 +9,10 @@ img.thumbnail {
 .checked{
     color: orange;
 }
+a:link{
+    cursor: pointer;
+    text-decoration: none!important;
+}
+a:hover{
+    text-decoration: none;
+}
