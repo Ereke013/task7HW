@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://ultraq.net.nz/thymeleaf/layout" layout:decorator="layout/main.html">
+
+<div layout:fragment="site_content">
+
+    <!--    <div class="col-sm-9">-->
+    <div class="card">
+        <img th:src="${item.getLargePicURL()}" style="max-width: 100%; height: 450px" class="card-img-top" alt="...">
+        <div class="card-body">
+            <a th:href="@{'/details/' + ${item.getId()}}"><h5 class="card-title" th:text="${item.getName()}"></h5></a>
+            <h5>$<span th:text="${item.getPrice()}"></span></h5>
+            <p class="card-text" th:text="${item.getDescription()}"></p>
+        </div>
+        <div class="card-footer">
+                            <span style="color: rgba(246,225,45,0.96) " class="fa fa-star"
+                                  th:each="num: ${#numbers.sequence(1,item.getStars(),1)}"></span>
+            <span class="fa fa-star" th:each="num: ${#numbers.sequence(item.getStars(),4,1)}"
+                  style=""></span>
+        </div>
+    </div>
+    <!--        <div id="demo" class="carousel slide" data-ride="carousel">-->
+
+    <!--            &lt;!&ndash; Indicators &ndash;&gt;-->
+    <!--            <ul class="carousel-indicators">-->
+    <!--                <li data-target="#demo" data-slide-to="0" class="active"></li>-->
+    <!--                <li data-target="#demo" data-slide-to="1"></li>-->
+    <!--                <li data-target="#demo" data-slide-to="2"></li>-->
+    <!--            </ul>-->
+
+    <!--            &lt;!&ndash; The slideshow &ndash;&gt;-->
+    <!--            <div class="carousel-inner">-->
+    <!--                <div class="carousel-item active">-->
+    <!--                    <img th:src="@{'https://www.pngkit.com/png/full/214-2143210_windows-10-laptop-png-acer-travelmate-spin-b1.png'}"-->
+    <!--                         alt=""-->
+    <!--                         style="display: inline-block; max-width: 100%; height: 400px; background-color: rgba(49,70,153,0.33)">-->
+    <!--                    <div class="carousel-caption">-->
+    <!--                        <h3 style="background-color: #ffffff; color: black" th:text="#{label.welcome}"></h3>-->
+    <!--                        <p style="color: white" th:text="#{label.quick}"></p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div class="carousel-item">-->
+    <!--                    <img th:src="@{'https://www.kindpng.com/picc/m/194-1945580_laptop-windows-10-png-windows-10-laptop-png.png'}"-->
+    <!--                         alt=""-->
+    <!--                         style="width: 100%; height: 400px">-->
+    <!--                    <div class="carousel-caption">-->
+    <!--                        <h3 style="background-color: #ffffff; color: black" th:text="#{label.welcome}"></h3>-->
+    <!--                        <p style="color: white" th:text="#{label.quick}"></p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div class="carousel-item">-->
+    <!--                    <img th:src="@{'https://www.seekpng.com/png/detail/5-57883_windows-laptop-png-svg-library-download-best-laptops.png'}"-->
+    <!--                         alt=""-->
+    <!--                         style="width: 100%; height: 400px">-->
+    <!--                    <div class="carousel-caption">-->
+    <!--                        <h3 style="background-color: #ffffff; color: black" th:text="#{label.quick}"></h3>-->
+    <!--                        <p style="color: white" th:text="#{label.quick}"></p>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+
+    <!--            &lt;!&ndash; Left and right controls &ndash;&gt;-->
+    <!--            <a class="carousel-control-prev" href="#demo" data-slide="prev">-->
+    <!--                <span class="carousel-control-prev-icon"></span>-->
+    <!--            </a>-->
+    <!--            <a class="carousel-control-next" href="#demo" data-slide="next">-->
+    <!--                <span class="carousel-control-next-icon"></span>-->
+    <!--            </a>-->
+    <!--        </div>-->
+
+
+</div>
+</html>
