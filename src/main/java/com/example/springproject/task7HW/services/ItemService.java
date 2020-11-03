@@ -10,4 +10,5 @@ public interface ItemService {
     ShopItems getItem(Long id);
     void deleteItem(ShopItems items);
     ShopItems saveItem(ShopItems items);
+    List<ShopItems> getItemsInTop(boolean top);
 }

@@ -38,4 +38,9 @@ public class ItemServiceImpl implements ItemService {
     public ShopItems saveItem(ShopItems items) {
         return shopItemRepository.save(items);
     }
+
+    @Override
+    public List<ShopItems> getItemsInTop(boolean top) {
+        return shopItemRepository.findAllByInTopPageEquals(top);
+    }
 }

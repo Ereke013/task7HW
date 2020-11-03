@@ -26,17 +26,19 @@ public class HomeController {
 
     @GetMapping(value = "/")
     public String index(Model model) {
-        List<ShopItems> items = itemService.getAllItems();
-//        List<ShopItems> items1 = null;
-//        for(ShopItems shopItem:items){
-//            if(shopItem.isInTopPage()) {
-//                items1.add(0, shopItem);
-//            }
-//            else {
-//                items1.add(shopItem);
-//            }
-//        }
-        model.addAttribute("items", items);
+        ArrayList<ShopItems> items = (ArrayList<ShopItems>) itemService.getAllItems();
+        ArrayList<ShopItems> items1 = new ArrayList<>();
+        ArrayList<ShopItems> items2 = new ArrayList<>();
+        for(ShopItems shopItem:items){
+            if(shopItem.isInTopPage()) {
+                items1.add(shopItem);
+            }
+            else {
+                items2.add(shopItem);
+            }
+        }
+        model.addAttribute("IsTopItems", items1);
+        model.addAttribute("items", items2);
         return "index";
     }
 
