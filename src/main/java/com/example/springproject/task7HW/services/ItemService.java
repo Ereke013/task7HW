@@ -11,4 +11,9 @@ public interface ItemService {
     void deleteItem(ShopItems items);
     ShopItems saveItem(ShopItems items);
     List<ShopItems> getItemsInTop(boolean top);
+    List<ShopItems> getItemsByNamePriceAsc(String name);
+    List<ShopItems> getItemsByNamePriceDesc(String name);
+    List<ShopItems> getItemsByNameAndPriceBetweenOrderByPriceDesc(String name,double price1,double price2);
+    List<ShopItems> getItemsByNameAndPriceBetweenOrderByPriceAsc(String name,double price1,double price2);
+
 }
