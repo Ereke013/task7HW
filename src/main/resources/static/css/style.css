@@ -1,18 +1,29 @@
-img{
-max-width: 100%;
+img {
+    max-width: 100%;
 }
+
 img.thumbnail {
     width: 100px;
     height: 70px;
 }
 
-.checked{
+.checked {
     color: orange;
 }
-a:link{
+
+a:link {
     cursor: pointer;
-    text-decoration: none!important;
+    text-decoration: none !important;
 }
-a:hover{
+
+a:hover {
     text-decoration: none;
+}
+
+.buttongoi {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #005cbf;
+    font-size: 14px;
 }

@@ -6,9 +6,23 @@
     <div class="pt-4">
         <form th:action="@{'/search'}" method="get">
             <div class="row align-items-end">
-                <div class="col-5">
+                <div class="col-3">
                     <label th:text="#{label.itemName}"></label>
                     <input type="text" class="form-control" th:value="${name}" name="name">
+                </div>
+                <div class="col-2">
+<!--                    <label th:text="#{label.Brand}"></label>-->
+<!--                    <div class="form-group">-->
+                        <label th:text="#{label.Brand}">
+                        </label>
+                    <select class="form-control" name="brand_id">
+                        <option th:each="brnd:${brands}" th:text="${brnd.name}" th:value="${brnd.id}" th:selected="${brnd.id==oneBrand.id}"></option>
+                    </select>
+<!--                        <select class="form-control" name="brand_id">-->
+<!--                            <option th:each="brnd:${brands}" th:text="${brnd.name}" th:value="${brnd.id}"></option>-->
+<!--&lt;!&ndash;                            <option>Hello</option>&ndash;&gt;-->
+<!--                        </select>-->
+<!--                    </div>-->
                 </div>
                 <div class="col-2">
                     <label th:text="#{label.itemPrice}"></label>
@@ -34,6 +48,7 @@
                 <form th:action="@{'/search'}" method="get">
                     <input type="hidden" name="order" value="asc">
                     <input type="hidden" name="name" th:value="${name}">
+                    <input type="hidden" name="brand_id" th:value="${oneBrand.id}">
                     <input type="hidden" name="priceFrom" th:value="${price_from}">
                     <input type="hidden" name="priceTo" th:value="${price_to}">
                     <button class="btn btn-secondary" disabled th:if="${order.equals('asc')}">Ascending</button>
@@ -42,6 +57,7 @@
                 <form th:action="@{'/search'}" method="get">
                     <input type="hidden" name="order" value="desc">
                     <input type="hidden" name="name" th:value="${name}">
+                    <input type="hidden" name="brand_id" th:value="${oneBrand.id}">
                     <input type="hidden" name="priceFrom" th:value="${price_from}">
                     <input type="hidden" name="priceTo" th:value="${price_to}">
                     <button class="btn btn-secondary" disabled th:if="${order.equals('desc')}">Descending</button>
@@ -61,6 +77,13 @@
                     </a>
                     <h5>$<span th:text="${item.getPrice()}"></span></h5>
                     <p class="card-text" th:text="${item.getDescription()}"></p>
+                    <form th:action="@{'/search'}" method="get">
+
+                        <h6 class="card-text">BRAND:
+                            <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 14px; font-weight: bold" type="submit" name="brand_id" th:value="${item.brands.id}"
+                                    th:text="${item.brands!=null ? item.brands.name + ', ' + item.brands.countries.name : '------'}"></button>
+                        </h6>
+                    </form>
                 </div>
                 <div class="card-footer">
                             <span class="fa fa-star checked"

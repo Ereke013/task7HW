@@ -1,6 +1,10 @@
 package com.example.springproject.task7HW.services.impl;
 
+import com.example.springproject.task7HW.entities.Brands;
+import com.example.springproject.task7HW.entities.Country;
 import com.example.springproject.task7HW.entities.ShopItems;
+import com.example.springproject.task7HW.repositories.BrandsRepository;
+import com.example.springproject.task7HW.repositories.CountryRepository;
 import com.example.springproject.task7HW.repositories.ShopItemRepository;
 import com.example.springproject.task7HW.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private ShopItemRepository shopItemRepository;
+
+    @Autowired
+    private CountryRepository countryRepository;
+
+    @Autowired
+    private BrandsRepository brandsRepository;
 
     @Override
     public ShopItems addItem(ShopItems items) {
@@ -62,5 +72,70 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ShopItems> getItemsByNameAndPriceBetweenOrderByPriceAsc(String name, double price1, double price2) {
         return shopItemRepository.findAllByNameContainingAndPriceIsBetweenOrderByPriceAsc(name, price1, price2);
+    }
+
+    @Override
+    public Country addCountry(Country country) {
+        return countryRepository.save(country);
+    }
+
+    @Override
+    public List<Country> getAllCountry() {
+        return countryRepository.findAll();
+    }
+
+    @Override
+    public Country getCountry(Long id) {
+        return countryRepository.getOne(id);
+    }
+
+    @Override
+    public Country saveCountry(Country country) {
+        return countryRepository.save(country);
+    }
+
+    @Override
+    public List<Brands> getAllBrands() {
+        return brandsRepository.findAll();
+    }
+
+    @Override
+    public Brands saveBrand(Brands brand) {
+        return brandsRepository.save(brand);
+    }
+
+    @Override
+    public Brands getBrand(Long id) {
+        return brandsRepository.getOne(id);
+    }
+
+    @Override
+    public Brands addBrand(Brands brand) {
+        return brandsRepository.save(brand);
+    }
+
+    @Override
+    public List<ShopItems> getItemsByBrand(Brands brand) {
+        return shopItemRepository.findAllByBrands(brand);
+    }
+
+    @Override
+    public List<ShopItems> getItemsByBrandAndByNamePriceAsc(Brands brand, String name) {
+        return shopItemRepository.findAllByBrandsAndNameContainingOrderByPriceAsc(brand,name);
+    }
+
+    @Override
+    public List<ShopItems> getItemsByBrandAndByNamePriceDesc(Brands brand, String name) {
+        return shopItemRepository.findAllByBrandsAndNameContainingOrderByPriceDesc(brand,name);
+    }
+
+    @Override
+    public List<ShopItems> getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceDesc(Brands brand, String name, double price1, double price2) {
+        return shopItemRepository.findAllByBrandsAndNameContainingAndPriceIsBetweenOrderByPriceDesc(brand,name,price1,price2);
+    }
+
+    @Override
+    public List<ShopItems> getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceAsc(Brands brand, String name, double price1, double price2) {
+        return shopItemRepository.findAllByBrandsAndNameContainingAndPriceIsBetweenOrderByPriceAsc(brand,name,price1,price2);
     }
 }

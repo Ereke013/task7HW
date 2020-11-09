@@ -3,6 +3,8 @@ package com.example.springproject.task7HW.controllers;
 
 import com.example.springproject.task7HW.db.DBManager;
 import com.example.springproject.task7HW.db.ShopItem;
+import com.example.springproject.task7HW.entities.Brands;
+import com.example.springproject.task7HW.entities.Country;
 import com.example.springproject.task7HW.entities.ShopItems;
 import com.example.springproject.task7HW.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,11 @@ public class HomeController {
                 items2.add(shopItem);
             }
         }
+
+        List<Brands> brandsList = itemService.getAllBrands();
+        List<Country> countryList = itemService.getAllCountry();
+        model.addAttribute("brands", brandsList);
+        model.addAttribute("countries", countryList);
         model.addAttribute("IsTopItems", items1);
         model.addAttribute("items", items2);
         return "index";
@@ -48,11 +55,27 @@ public class HomeController {
                           @RequestParam(name = "item_star", defaultValue = "0") int star,
                           @RequestParam(name = "item_date", defaultValue = "1991-02-02") String date,
                           @RequestParam(name = "item_smallPic", defaultValue = "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png") String small_picture,
-                          @RequestParam(name = "item_largePic", defaultValue = "https://www.tellerreport.com/images/no-image.png") String large_picture
+                          @RequestParam(name = "item_largePic", defaultValue = "https://www.tellerreport.com/images/no-image.png") String large_picture,
+                          @RequestParam(name = "brand_id", defaultValue = "0") Long brandId
+//                          @RequestParam(name = "country_id", defaultValue = "0") Long countryId
     ) {
 
 
-        itemService.addItem(new ShopItems(null, name, description, price, star, small_picture, large_picture, Date.valueOf(date), false));
+        ShopItems item = new ShopItems();
+        Brands brand = itemService.getBrand(brandId);
+//        Country country = itemService.getCountry(countryId);
+        item.setName(name);
+        item.setDescription(description);
+        item.setPrice(price);
+        item.setStars(star);
+        item.setSmallPicURL(small_picture);
+        item.setLargePicURL(large_picture);
+        item.setAddedDate(Date.valueOf(date));
+        item.setInTopPage(false);
+        item.setBrands(brand);
+//        item.getBrands().setCountries(country);
+        itemService.addItem(item);
+//        itemService.addItem(new ShopItems(null, name, description, price, star, small_picture, large_picture, Date.valueOf(date), false));
         return "redirect:/";
     }
 
@@ -69,6 +92,10 @@ public class HomeController {
 //        Items item = DBManager.getItem(id);
         ShopItems item = itemService.getItem(id);
         model.addAttribute("item", item);
+        List<Country> countryList = itemService.getAllCountry();
+        List<Brands> brandsList = itemService.getAllBrands();
+        model.addAttribute("countries", countryList);
+        model.addAttribute("brands", brandsList);
         return "details";
     }
 
@@ -93,79 +120,148 @@ public class HomeController {
             @RequestParam(name = "item_star", defaultValue = "0") int stars,
             @RequestParam(name = "item_smallPic", defaultValue = "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png") String smallPic,
             @RequestParam(name = "item_largePic", defaultValue = "https://tutaki.org.nz/wp-content/uploads/2019/04/no-image-1.png") String largePic,
+            @RequestParam(name = "country_id", defaultValue = "0") Long country_id,
+            @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
             @RequestParam(name = "isTop", defaultValue = "0") boolean isTop) {
 //        DBManager.addItem(new Items(null, name,price));
 //        itemService.addItem(new ShopItems(null, name,price,amount));
         System.out.println("save-ke keldi");
         ShopItems item = itemService.getItem(id);
         if (item != null) {
-            item.setName(name);
-            item.setDescription(description);
-            item.setPrice(price);
-            item.setStars(stars);
-            item.setSmallPicURL(smallPic);
-            item.setLargePicURL(largePic);
-            item.setInTopPage(isTop);
-            itemService.saveItem(item);
+//            Country country = itemService.getCountry(country_id);
+//            if(country!=null) {
+            Brands brand = itemService.getBrand(brand_id);
+            if (brand != null) {
+                System.out.println("country id:  " + country_id);
+//                    System.out.println("brand id:  " + brand_id);
+                item.setName(name);
+                item.setDescription(description);
+                item.setPrice(price);
+                item.setStars(stars);
+                item.setSmallPicURL(smallPic);
+                item.setLargePicURL(largePic);
+//                    item.getBrands().setCountries(country);
+                item.setBrands(brand);
+                item.setInTopPage(isTop);
+                itemService.saveItem(item);
+            }
+//            }
         }
         return "redirect:/";
     }
 
     @GetMapping(value = "/searchItem")
-    public String searchItem(Model model, @RequestParam(name = "search") String name) {
+    public String searchItem(Model model,
+                         @RequestParam(name = "name", defaultValue = "") String name,
+                         @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
+                         @RequestParam(name = "priceFrom", defaultValue = "0") String priceFrom,
+//                         @RequestParam(name = "empty_brand", defaultValue = "0") Long emp_id,
+                         @RequestParam(name = "priceTo", defaultValue = "1111111") String priceTo,
+                         @RequestParam(name = "order", defaultValue = "asc") String order) {
         System.out.println("name: " + name);
-        List<ShopItems> items = itemService.getItemsByNamePriceAsc(name);
+
+
+        List<ShopItems> items2 = itemService.getItemsByNamePriceAsc(name);
+        Brands brand = itemService.getBrand(brand_id);
+        System.out.println("brand_id: " + brand_id);
+
+        List<ShopItems> items = itemService.getItemsByNamePriceDesc(name);
 //        Items item = DBManager.getItem(id);
-        if (items != null) {
-            model.addAttribute("name", name);
-            model.addAttribute("items", items);
-            return "search";
-        }
-        return "redirect:/";
+
+//        if (items != null) {'
+        System.out.println("asdasdasds");
+        System.out.println(items);
+        model.addAttribute("items", items);
+        model.addAttribute("name", name);
+        model.addAttribute("order", order);
+        model.addAttribute("price_from", priceFrom);
+        model.addAttribute("price_to", priceTo);
+        model.addAttribute("oneBrand", brand);
+        List<Brands> brandsList = itemService.getAllBrands();
+        model.addAttribute("brands", brandsList);
+        System.out.println(brandsList.size());
+        return "search";
+//        }
+//        return "redirect:/";
 
     }
 
     @GetMapping(value = "/search")
     public String search(Model model,
                          @RequestParam(name = "name", defaultValue = "") String name,
+                         @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
                          @RequestParam(name = "priceFrom", defaultValue = "0") String priceFrom,
+                         @RequestParam(name = "brand_name", defaultValue = "") String brandName,
+//                         @RequestParam(name = "empty_brand", defaultValue = "0") Long emp_id,
                          @RequestParam(name = "priceTo", defaultValue = "1111111") String priceTo,
                          @RequestParam(name = "order", defaultValue = "asc") String order) {
         System.out.println("name: " + name);
 
+        Brands brand = itemService.getBrand(brand_id);
         List<ShopItems> items2 = itemService.getItemsByNamePriceAsc(name);
-        List<ShopItems> items ;
-//        Items item = DBManager.getItem(id);
-        if(priceFrom.equals("0")&&priceTo.equals("1111111")){
-            if(order.equals("asc")){
-                items = itemService.getItemsByNamePriceAsc(name);
-            }
-            else {
-                items = itemService.getItemsByNamePriceDesc(name);
+        if(!brandName.equals("")){
+            List<Brands> brandsList = itemService.getAllBrands();
+            for(Brands brands : brandsList) {
+                if(brands.getName().equals(brandName)) {
+                    brand = itemService.getBrand(brands.getId());
+                    brand_id = brand.getId();
+                }
             }
         }
-        else {
-            if(order.equals("asc")){
-                items = itemService.getItemsByNameAndPriceBetweenOrderByPriceAsc(name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
+
+        System.out.println("brand_id: " + brand_id);
+
+        List<ShopItems> items;
+//        Items item = DBManager.getItem(id);
+
+//        if (name.equals("") && priceFrom.equals("0") && priceTo.equals("1111111")){
+//
+//        }
+
+        if (priceFrom.equals("0") && priceTo.equals("1111111")) {
+            if (order.equals("asc")) {
+                if(brand_id == 0){
+                    items = itemService.getItemsByNamePriceAsc(name);
+                }
+                else {
+                    items = itemService.getItemsByBrandAndByNamePriceAsc(brand, name);
+                }
+            } else {
+                if(brand_id == 0){
+                    items = itemService.getItemsByNamePriceDesc(name);
+                }
+                else {
+                    items = itemService.getItemsByBrandAndByNamePriceDesc(brand, name);
+                }
             }
-            else {
-                items = itemService.getItemsByNameAndPriceBetweenOrderByPriceAsc(name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
+        } else {
+            if (order.equals("asc")) {
+                items = itemService.getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceAsc(brand, name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
+//                items = itemService.getItemsByNameAndPriceBetweenOrderByPriceAsc(name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
+            } else {
+//                items = itemService.getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceDesc(brand, name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
+                items = itemService.getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceAsc(brand, name, Double.parseDouble(priceFrom), Double.parseDouble(priceTo));
 
             }
         }
 //        if (items != null) {'
         System.out.println("asdasdasds");
         System.out.println(items);
-            model.addAttribute("items", items);
-            model.addAttribute("name", name);
-            model.addAttribute("order", order);
-            model.addAttribute("price_from", priceFrom);
-            model.addAttribute("price_to", priceTo);
-            return "search";
+        model.addAttribute("items", items);
+        model.addAttribute("name", name);
+        model.addAttribute("order", order);
+        model.addAttribute("price_from", priceFrom);
+        model.addAttribute("price_to", priceTo);
+        model.addAttribute("oneBrand", brand);
+        List<Brands> brandsList = itemService.getAllBrands();
+        model.addAttribute("brands", brandsList);
+        System.out.println(brandsList.size());
+        return "search";
 //        }
 //        return "redirect:/";
 
     }
+
     @GetMapping(value = "/filterAsc")
     public String filteringAsc(Model model,
                                @RequestParam(name = "search_name") String name,
@@ -174,14 +270,13 @@ public class HomeController {
     ) {
         if (price_from == (0) && price_to == (-1)) {
             List<ShopItems> items = itemService.getItemsByNamePriceAsc(name);
-            if(items!=null){
+            if (items != null) {
                 model.addAttribute("name", name);
                 model.addAttribute("items", items);
             }
-        }
-        else {
-            List<ShopItems> items2 = itemService.getItemsByNameAndPriceBetweenOrderByPriceAsc(name,price_from,price_to);
-            if(items2!=null){
+        } else {
+            List<ShopItems> items2 = itemService.getItemsByNameAndPriceBetweenOrderByPriceAsc(name, price_from, price_to);
+            if (items2 != null) {
                 model.addAttribute("name", name);
                 model.addAttribute("items", items2);
             }
@@ -191,20 +286,19 @@ public class HomeController {
 
     @GetMapping(value = "/filterDesc")
     public String filterDesc(Model model,
-                               @RequestParam(name = "search_name") String name,
-                               @RequestParam(name = "search_price_from", defaultValue = "0") double price_from,
-                               @RequestParam(name = "search_price_to", defaultValue = "-1") double price_to
+                             @RequestParam(name = "search_name") String name,
+                             @RequestParam(name = "search_price_from", defaultValue = "0") double price_from,
+                             @RequestParam(name = "search_price_to", defaultValue = "-1") double price_to
     ) {
         if (price_from == (0) && price_to == (-1)) {
             List<ShopItems> items = itemService.getItemsByNamePriceDesc(name);
-            if(items!=null){
+            if (items != null) {
                 model.addAttribute("name", name);
                 model.addAttribute("items", items);
             }
-        }
-        else {
-            List<ShopItems> items2 = itemService.getItemsByNameAndPriceBetweenOrderByPriceDesc(name,price_from,price_to);
-            if(items2!=null){
+        } else {
+            List<ShopItems> items2 = itemService.getItemsByNameAndPriceBetweenOrderByPriceDesc(name, price_from, price_to);
+            if (items2 != null) {
                 model.addAttribute("name", name);
                 model.addAttribute("items", items2);
             }
