@@ -306,4 +306,76 @@ public class HomeController {
         return "search";
     }
 
+    @GetMapping(value = "/editBrands")
+    public String editBrands(Model model){
+        List<Brands> brandsList = itemService.getAllBrands();
+        List<Country> countryList = itemService.getAllCountry();
+
+        model.addAttribute("brands", brandsList);
+        model.addAttribute("countries", countryList);
+
+        return "editBr";
+    }
+
+    @PostMapping(value = "/addBrand")
+    public String addBrand(@RequestParam(name = "brand_name", defaultValue = "") String brand_name,
+                           @RequestParam(name = "country_id" , defaultValue = "0") Long country_id) {
+        boolean check = true;
+        List<Brands> brands = itemService.getAllBrands();
+        for(Brands brands1: brands){
+            if(brands1.getName().toLowerCase().equals(brand_name.toLowerCase())) {
+                check = false;
+            }
+        }
+        Country country = itemService.getCountry(country_id);
+        if (check) {
+            if (country != null) {
+                itemService.addBrand(new Brands(null, brand_name, country));
+            }
+        }
+        return "redirect:/editBrands";
+    }
+
+    @PostMapping(value = "/addCountry")
+    public String addBrand(@RequestParam(name = "country_name", defaultValue = "") String country_name,
+                           @RequestParam(name = "country_code", defaultValue = "")String code) {
+        boolean check = true;
+        List<Country> countryList = itemService.getAllCountry();
+        for(Country country: countryList){
+            if(country.getName().toLowerCase().equals(country_name.toLowerCase())) {
+                check = false;
+            }
+        }
+        if (check) {
+
+                itemService.addCountry(new Country(null, country_name, code));
+
+        }
+        return "redirect:/editBrands";
+    }
+
+    @PostMapping(value = "/saveCountry")
+    public String saveCountry(@RequestParam(name = "country_name", defaultValue = "") String country_name,
+                                @RequestParam(name = "country_id", defaultValue = "0") Long id,
+                           @RequestParam(name = "country_code", defaultValue = "")String code) {
+        boolean check = true;
+        Country country = itemService.getCountry(id);
+        List<Country> countryList = itemService.getAllCountry();
+        for(Country countrys: countryList){
+            if(countrys.getName().toLowerCase().equals(country_name.toLowerCase())) {
+                if(country.getName().equals(country_name)){
+                    continue;
+                }
+                else {
+                    check = false;
+                }
+            }
+        }
+        if (check) {
+            country.setName(country_name);
+            country.setCode(code);
+            itemService.saveCountry(country);
+        }
+        return "redirect:/editBrands";
+    }
 }

@@ -80,50 +80,55 @@
                     </div>
 
 <!--                    brands-->
+                    <a href="/editBrands" type="button" class="btn btn-success mt-3"><i class="fas fa-edit"></i> <span th:text="#{button.Edit}"></span>
+                    </a>
                     <div class="card mt-3">
                         <div class="card-header" style="background-color: #156145">
                             <strong style="color: white" th:text="#{label.brands}"></strong>
                         </div>
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item" >
+
+                            <li class="list-group-item" th:each="brand : ${brands}">
                                 <form th:action="@{'/search'}" method="get">
-                                        <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Apple'}">Apple</button>
-                                </form>
+
+                                        <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${brand.name}" th:text="${brand.name}"></button>
+                            </form>
                             </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Samsung'}">Samsung</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'LG'}">LG</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Bosch'}">Bosch</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Zepterg'}">Zepterg</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Xiaomi'}">Xiaomi</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <form th:action="@{'/search'}" method="get">
-                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Nokia'}">Nokia</button>
-                                </form>
-                            </li>
-                            <li class="list-group-item" >
-                                <a href="#" style="color: black" th:text="#{label.other}">
-                                </a>
-                            </li>
+
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Samsung'}">Samsung</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'LG'}">LG</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Bosch'}">Bosch</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Zepterg'}">Zepterg</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Xiaomi'}">Xiaomi</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <form th:action="@{'/search'}" method="get">-->
+<!--                                    <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 16px; font-weight: bold" type="submit" name="brand_name" th:value="${'Nokia'}">Nokia</button>-->
+<!--                                </form>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <a href="#" style="color: black" th:text="#{label.other}">-->
+<!--                                </a>-->
+<!--                            </li>-->
                         </ul>
                     </div>
 

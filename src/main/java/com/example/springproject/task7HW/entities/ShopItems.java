@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "items")
@@ -44,4 +45,7 @@ public class ShopItems {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Brands brands;
+
+    @ManyToMany
+    List<Categories> categories;
 }

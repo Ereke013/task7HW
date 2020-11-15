@@ -43,7 +43,7 @@
             <h3>Search Result:</h3>
         </div>
         <div class="col-sm-6 ml-auto form-inline">
-            <h6 style="color:black">Order by price:</h6>
+            <h6 class="mr-3" style="color:black">Order by price:</h6>
             <div class="btn-group" role="group" aria-label="">
                 <form th:action="@{'/search'}" method="get">
                     <input type="hidden" name="order" value="asc">
@@ -59,7 +59,7 @@
                     <input type="hidden" name="name" th:value="${name}">
                     <input type="hidden" name="brand_id" th:value="${oneBrand.id}">
                     <input type="hidden" name="priceFrom" th:value="${price_from}">
-                    <input type="hidden" name="priceTo" th:value="${price_to}">
+                    <input type="hidden" th:class="mr-3" name="priceTo" th:value="${price_to}">
                     <button class="btn btn-secondary" disabled th:if="${order.equals('desc')}">Descending</button>
                     <button class="btn btn-secondary"  th:unless="${order.equals('desc')}">Desckending</button>
                 </form>
