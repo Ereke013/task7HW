@@ -1,6 +1,8 @@
 package com.example.springproject.task7HW.services;
 
+import com.example.springproject.task7HW.db.ShopItem;
 import com.example.springproject.task7HW.entities.Brands;
+import com.example.springproject.task7HW.entities.Categories;
 import com.example.springproject.task7HW.entities.Country;
 import com.example.springproject.task7HW.entities.ShopItems;
 
@@ -22,15 +24,24 @@ public interface ItemService {
     List<ShopItems> getItemsByBrandAndByNamePriceDesc(Brands brand, String name);
     List<ShopItems> getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceDesc(Brands brand, String name,double price1,double price2);
     List<ShopItems> getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceAsc(Brands brand, String name,double price1,double price2);
+    List<ShopItems> getAllByCategories(Categories category);
 
     Country addCountry(Country country);
     List<Country> getAllCountry();
     Country getCountry(Long id);
+    void deleteCountry(Country country);
     Country saveCountry(Country country);
 
     List<Brands> getAllBrands();
     Brands saveBrand(Brands brand);
     Brands getBrand(Long id);
+    void deleteBrand(Brands brand);
     Brands addBrand(Brands brand);
+
+    List<Categories> getAllCategories();
+    Categories saveCategory(Categories category);
+    Categories getCategory(Long id);
+    void deleteCategory(Categories category);
+    Categories addCategory(Categories category);
 
 }

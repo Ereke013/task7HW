@@ -46,6 +46,6 @@ public class ShopItems {
     @ManyToOne(fetch = FetchType.EAGER)
     private Brands brands;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     List<Categories> categories;
 }

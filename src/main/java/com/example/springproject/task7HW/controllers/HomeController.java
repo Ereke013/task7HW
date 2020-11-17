@@ -1,9 +1,8 @@
 package com.example.springproject.task7HW.controllers;
 
 
-import com.example.springproject.task7HW.db.DBManager;
-import com.example.springproject.task7HW.db.ShopItem;
 import com.example.springproject.task7HW.entities.Brands;
+import com.example.springproject.task7HW.entities.Categories;
 import com.example.springproject.task7HW.entities.Country;
 import com.example.springproject.task7HW.entities.ShopItems;
 import com.example.springproject.task7HW.services.ItemService;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +29,8 @@ public class HomeController {
         ArrayList<ShopItems> items = (ArrayList<ShopItems>) itemService.getAllItems();
         ArrayList<ShopItems> items1 = new ArrayList<>();
         ArrayList<ShopItems> items2 = new ArrayList<>();
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
         for (ShopItems shopItem : items) {
             if (shopItem.isInTopPage()) {
                 items1.add(shopItem);
@@ -48,6 +48,22 @@ public class HomeController {
         return "index";
     }
 
+    @PostMapping(value = "/by")
+    public String byCateg(Model model, @RequestParam(name = "idCategoria", defaultValue = "-1") Long categoryID) {
+        Categories category = itemService.getCategory(categoryID);
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
+        List<Brands> brandsList = itemService.getAllBrands();
+        model.addAttribute("brands", brandsList);
+        if (category != null) {
+            List<ShopItems> listCategory = itemService.getAllByCategories(category);
+            model.addAttribute("byCategory", listCategory);
+            model.addAttribute("category", category);
+            return "byCategory";
+        }
+        return "redirect:/index";
+    }
+
     @PostMapping(value = "/addItem")
     public String addItem(@RequestParam(name = "item_name", defaultValue = "No Name") String name,
                           @RequestParam(name = "item_description", defaultValue = "No Description") String description,
@@ -56,11 +72,12 @@ public class HomeController {
                           @RequestParam(name = "item_date", defaultValue = "1991-02-02") String date,
                           @RequestParam(name = "item_smallPic", defaultValue = "https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png") String small_picture,
                           @RequestParam(name = "item_largePic", defaultValue = "https://www.tellerreport.com/images/no-image.png") String large_picture,
-                          @RequestParam(name = "brand_id", defaultValue = "0") Long brandId
+                          @RequestParam(name = "brand_id", defaultValue = "0") Long brandId,
+                          @RequestParam(name = "category_id", defaultValue = "0") Long categoryId
 //                          @RequestParam(name = "country_id", defaultValue = "0") Long countryId
     ) {
-
-
+//        Categories cat = itemService.getCategory(categoryId);
+//        List<Categories> categoriesList = new ArrayList<>();
         ShopItems item = new ShopItems();
         Brands brand = itemService.getBrand(brandId);
 //        Country country = itemService.getCountry(countryId);
@@ -73,8 +90,30 @@ public class HomeController {
         item.setAddedDate(Date.valueOf(date));
         item.setInTopPage(false);
         item.setBrands(brand);
+//        item.setCategories(cat);
 //        item.getBrands().setCountries(country);
         itemService.addItem(item);
+
+        Categories cat = itemService.getCategory(categoryId);
+        if (cat != null) {
+            ShopItems items = itemService.getItem(item.getId());
+            System.out.println(items);
+            if (items != null) {
+                List<Categories> categories = items.getCategories();
+                if (categories == null) {
+                    categories = new ArrayList<>();
+                }
+                categories.add(cat);
+
+                items.setCategories(categories);
+                itemService.saveItem(items);
+
+                return "redirect:/admin";
+            }
+
+        }
+
+
 //        itemService.addItem(new ShopItems(null, name, description, price, star, small_picture, large_picture, Date.valueOf(date), false));
         return "redirect:/";
     }
@@ -82,6 +121,12 @@ public class HomeController {
     @GetMapping(value = "/view/{idshka}")
     public String view(Model model, @PathVariable(name = "idshka") Long id) {
 //        Items item = DBManager.getItem(id);
+        List<Brands> brandsList = itemService.getAllBrands();
+
+        model.addAttribute("brands", brandsList);
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
+
         ShopItems item = itemService.getItem(id);
         model.addAttribute("item", item);
         return "view";
@@ -94,7 +139,25 @@ public class HomeController {
         model.addAttribute("item", item);
         List<Country> countryList = itemService.getAllCountry();
         List<Brands> brandsList = itemService.getAllBrands();
+        List<Categories> categoriesList = item.getCategories();
+
+        List<Categories> categoriesList2 = itemService.getAllCategories();
+        List<Categories> categoriesList3 = itemService.getAllCategories();
+        for (int i = 0; i < categoriesList.size(); i++) {
+            Categories category = itemService.getCategory(categoriesList.get(i).getId());
+            if (categoriesList2.contains(category)) {
+                categoriesList3.remove(category);
+            }
+//
+//            for (int j = 0; j < categoriesList2.size(); j++) {
+//                if(categoriesList.get(i).getId() == categoriesList2.get(j).getId()){
+//
+//                }
+//            }
+        }
         model.addAttribute("countries", countryList);
+        model.addAttribute("categories", categoriesList);
+        model.addAttribute("categoriesWithout", categoriesList3);
         model.addAttribute("brands", brandsList);
         return "details";
     }
@@ -123,8 +186,6 @@ public class HomeController {
             @RequestParam(name = "country_id", defaultValue = "0") Long country_id,
             @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
             @RequestParam(name = "isTop", defaultValue = "0") boolean isTop) {
-//        DBManager.addItem(new Items(null, name,price));
-//        itemService.addItem(new ShopItems(null, name,price,amount));
         System.out.println("save-ke keldi");
         ShopItems item = itemService.getItem(id);
         if (item != null) {
@@ -147,17 +208,17 @@ public class HomeController {
             }
 //            }
         }
-        return "redirect:/";
+        return "redirect:/admin";
     }
 
     @GetMapping(value = "/searchItem")
     public String searchItem(Model model,
-                         @RequestParam(name = "name", defaultValue = "") String name,
-                         @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
-                         @RequestParam(name = "priceFrom", defaultValue = "0") String priceFrom,
+                             @RequestParam(name = "name", defaultValue = "") String name,
+                             @RequestParam(name = "brand_id", defaultValue = "0") Long brand_id,
+                             @RequestParam(name = "priceFrom", defaultValue = "0") String priceFrom,
 //                         @RequestParam(name = "empty_brand", defaultValue = "0") Long emp_id,
-                         @RequestParam(name = "priceTo", defaultValue = "1111111") String priceTo,
-                         @RequestParam(name = "order", defaultValue = "asc") String order) {
+                             @RequestParam(name = "priceTo", defaultValue = "1111111") String priceTo,
+                             @RequestParam(name = "order", defaultValue = "asc") String order) {
         System.out.println("name: " + name);
 
 
@@ -171,6 +232,8 @@ public class HomeController {
 //        if (items != null) {'
         System.out.println("asdasdasds");
         System.out.println(items);
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
         model.addAttribute("items", items);
         model.addAttribute("name", name);
         model.addAttribute("order", order);
@@ -199,10 +262,10 @@ public class HomeController {
 
         Brands brand = itemService.getBrand(brand_id);
         List<ShopItems> items2 = itemService.getItemsByNamePriceAsc(name);
-        if(!brandName.equals("")){
+        if (!brandName.equals("")) {
             List<Brands> brandsList = itemService.getAllBrands();
-            for(Brands brands : brandsList) {
-                if(brands.getName().equals(brandName)) {
+            for (Brands brands : brandsList) {
+                if (brands.getName().equals(brandName)) {
                     brand = itemService.getBrand(brands.getId());
                     brand_id = brand.getId();
                 }
@@ -220,17 +283,15 @@ public class HomeController {
 
         if (priceFrom.equals("0") && priceTo.equals("1111111")) {
             if (order.equals("asc")) {
-                if(brand_id == 0){
+                if (brand_id == 0) {
                     items = itemService.getItemsByNamePriceAsc(name);
-                }
-                else {
+                } else {
                     items = itemService.getItemsByBrandAndByNamePriceAsc(brand, name);
                 }
             } else {
-                if(brand_id == 0){
+                if (brand_id == 0) {
                     items = itemService.getItemsByNamePriceDesc(name);
-                }
-                else {
+                } else {
                     items = itemService.getItemsByBrandAndByNamePriceDesc(brand, name);
                 }
             }
@@ -255,6 +316,8 @@ public class HomeController {
         model.addAttribute("oneBrand", brand);
         List<Brands> brandsList = itemService.getAllBrands();
         model.addAttribute("brands", brandsList);
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("categories", categoriesList);
         System.out.println(brandsList.size());
         return "search";
 //        }
@@ -307,7 +370,7 @@ public class HomeController {
     }
 
     @GetMapping(value = "/editBrands")
-    public String editBrands(Model model){
+    public String editBrands(Model model) {
         List<Brands> brandsList = itemService.getAllBrands();
         List<Country> countryList = itemService.getAllCountry();
 
@@ -319,11 +382,11 @@ public class HomeController {
 
     @PostMapping(value = "/addBrand")
     public String addBrand(@RequestParam(name = "brand_name", defaultValue = "") String brand_name,
-                           @RequestParam(name = "country_id" , defaultValue = "0") Long country_id) {
+                           @RequestParam(name = "country_id", defaultValue = "0") Long country_id) {
         boolean check = true;
         List<Brands> brands = itemService.getAllBrands();
-        for(Brands brands1: brands){
-            if(brands1.getName().toLowerCase().equals(brand_name.toLowerCase())) {
+        for (Brands brands1 : brands) {
+            if (brands1.getName().toLowerCase().equals(brand_name.toLowerCase())) {
                 check = false;
             }
         }
@@ -333,40 +396,42 @@ public class HomeController {
                 itemService.addBrand(new Brands(null, brand_name, country));
             }
         }
-        return "redirect:/editBrands";
+        return "redirect:/brands";
     }
 
     @PostMapping(value = "/addCountry")
     public String addBrand(@RequestParam(name = "country_name", defaultValue = "") String country_name,
-                           @RequestParam(name = "country_code", defaultValue = "")String code) {
+                           @RequestParam(name = "country_code", defaultValue = "") String code) {
         boolean check = true;
         List<Country> countryList = itemService.getAllCountry();
-        for(Country country: countryList){
-            if(country.getName().toLowerCase().equals(country_name.toLowerCase())) {
+        for (Country country : countryList) {
+            if (country.getName().toLowerCase().equals(country_name.toLowerCase())) {
                 check = false;
             }
         }
         if (check) {
 
-                itemService.addCountry(new Country(null, country_name, code));
+            itemService.addCountry(new Country(null, country_name, code));
 
         }
-        return "redirect:/editBrands";
+        return "redirect:/countries";
     }
 
     @PostMapping(value = "/saveCountry")
     public String saveCountry(@RequestParam(name = "country_name", defaultValue = "") String country_name,
-                                @RequestParam(name = "country_id", defaultValue = "0") Long id,
-                           @RequestParam(name = "country_code", defaultValue = "")String code) {
+                              @RequestParam(name = "id", defaultValue = "0") Long id,
+                              @RequestParam(name = "country_code", defaultValue = "") String code) {
         boolean check = true;
         Country country = itemService.getCountry(id);
         List<Country> countryList = itemService.getAllCountry();
-        for(Country countrys: countryList){
-            if(countrys.getName().toLowerCase().equals(country_name.toLowerCase())) {
-                if(country.getName().equals(country_name)){
+        System.out.println("list = " + countryList);
+        System.out.println("country = " + country);
+        for (Country countrys : countryList) {
+            System.out.println("countryInFOr = " + countrys);
+            if (countrys.getName().toLowerCase().equals(country_name.toLowerCase())) {
+                if (country.getName().equals(country_name)) {
                     continue;
-                }
-                else {
+                } else {
                     check = false;
                 }
             }
@@ -376,6 +441,220 @@ public class HomeController {
             country.setCode(code);
             itemService.saveCountry(country);
         }
-        return "redirect:/editBrands";
+        return "redirect:/countries";
+    }
+
+    //    Admin
+    @GetMapping(value = "/admin")
+    public String indexAdmin(Model model) {
+        ArrayList<ShopItems> items = (ArrayList<ShopItems>) itemService.getAllItems();
+
+        List<Brands> brandsList = itemService.getAllBrands();
+        List<Country> countryList = itemService.getAllCountry();
+        List<Categories> categoriesList = itemService.getAllCategories();
+        model.addAttribute("brands", brandsList);
+        model.addAttribute("categories", categoriesList);
+        model.addAttribute("countries", countryList);
+        model.addAttribute("items", items);
+        return "indexAdmin";
+    }
+
+    @GetMapping(value = "/categories")
+    public String getCategories(Model model) {
+        List<Categories> categoriesList = itemService.getAllCategories();
+
+        model.addAttribute("categories", categoriesList);
+
+        return "categoryAdmin";
+    }
+
+    @PostMapping(value = "/addCategory")
+    public String addCategory(@RequestParam(name = "category_name", defaultValue = "No Name") String categoryName,
+                              @RequestParam(name = "logoUrl", defaultValue = "No Logo") String logoUrl) {
+
+
+        Categories categories = new Categories();
+        categories.setName(categoryName);
+        categories.setLogoUrl(logoUrl);
+        itemService.addCategory(categories);
+        return "redirect:/categories";
+    }
+
+    @GetMapping(value = "/countries")
+    public String getCountries(Model model) {
+        List<Country> countryList = itemService.getAllCountry();
+
+        model.addAttribute("countries", countryList);
+
+        return "countryAdmin";
+    }
+
+    @GetMapping(value = "/brands")
+    public String getBrands(Model model) {
+        List<Brands> brandsList = itemService.getAllBrands();
+        List<Country> countryList = itemService.getAllCountry();
+
+        model.addAttribute("brands", brandsList);
+        model.addAttribute("countries", countryList);
+
+        return "brandsAdmin";
+    }
+
+
+//    @PostMapping(value = "/addCountry")
+//    public String addCountry(@RequestParam(name = "country_name", defaultValue = "No Name") String countryName,
+//                              @RequestParam(name = "code", defaultValue = "No Code") String code) {
+//
+//
+//        Country country = new Country();
+//        country.setName(countryName);
+//        country.setCode(code);
+//        itemService.addCountry(country);
+//        return "redirect:/countries";
+//    }
+
+    @PostMapping(value = "/assigncategory")
+    public String assignCategory(@RequestParam(name = "item_id") Long itemId,
+                                 @RequestParam(name = "category_id") Long categoryID) {
+        Categories cat = itemService.getCategory(categoryID);
+        if (cat != null) {
+            ShopItems item = itemService.getItem(itemId);
+            if (item != null) {
+                List<Categories> categories = item.getCategories();
+                if (categories == null) {
+                    categories = new ArrayList<>();
+                }
+                categories.add(cat);
+
+                itemService.saveItem(item);
+
+                return "redirect:/details/" + itemId;
+            }
+        }
+        return "redirect:/admin";
+    }
+
+    @PostMapping(value = "/assigncategoryMinus")
+    public String assignCategoryMinus(@RequestParam(name = "item_id") Long itemId,
+                                      @RequestParam(name = "category_id") Long categoryID) {
+        Categories cat = itemService.getCategory(categoryID);
+        if (cat != null) {
+            ShopItems item = itemService.getItem(itemId);
+            if (item != null) {
+                List<Categories> categories = item.getCategories();
+                if (categories == null) {
+                    categories = new ArrayList<>();
+                }
+                categories.remove(cat);
+
+                itemService.saveItem(item);
+
+                return "redirect:/details/" + itemId;
+            }
+        }
+        return "redirect:/admin";
+    }
+
+    @GetMapping(value = "/editCountry/{idshka}")
+    public String detailsCountry(Model model, @PathVariable(name = "idshka") Long id) {
+//        Items item = DBManager.getItem(id);
+        Country country = itemService.getCountry(id);
+        String editName = "country";
+        model.addAttribute("country", country);
+        model.addAttribute("editName", editName);
+        return "detailsCountry";
+    }
+
+    @GetMapping(value = "/editBrand/{idshka}")
+    public String detailsBrand(Model model, @PathVariable(name = "idshka") Long id) {
+//        Items item = DBManager.getItem(id);
+        Brands brand = itemService.getBrand(id);
+        List<Country> countryList = itemService.getAllCountry();
+//        String editName = "country";
+        model.addAttribute("brand", brand);
+        model.addAttribute("countries", countryList);
+//        model.addAttribute("editName", editName);
+        return "detailsBrands";
+    }
+
+    @PostMapping(value = "/saveBrand")
+    public String saveBrand(@RequestParam(name = "brand_name", defaultValue = "") String brand_name,
+                            @RequestParam(name = "id", defaultValue = "0") Long brandId,
+                            @RequestParam(name = "country_id", defaultValue = "0") Long countryId) {
+        Brands brand = itemService.getBrand(brandId);
+
+        List<Country> countryList = itemService.getAllCountry();
+        System.out.println("Country id = " + countryId);
+        if (brand != null) {
+            Country country = itemService.getCountry(countryId);
+            if (country != null) {
+                brand.setName(brand_name);
+                brand.setCountries(country);
+                itemService.saveBrand(brand);
+
+            }
+        }
+        return "redirect:/brands";
+    }
+
+    @GetMapping(value = "/editCategory/{idshka}")
+    public String editCategory(Model model, @PathVariable(name = "idshka") Long id) {
+        Categories category = itemService.getCategory(id);
+        if (category != null) {
+
+            model.addAttribute("category", category);
+        }
+//        model.addAttribute("editName", editName);
+        return "detailsCategory";
+    }
+
+    @PostMapping(value = "/saveCategory")
+    public String saveCategory(@RequestParam(name = "category_name", defaultValue = "no name") String category_name,
+                               @RequestParam(name = "id", defaultValue = "0") Long categoryID,
+                               @RequestParam(name = "logoUrl", defaultValue = "no url") String logoUrl) {
+        Categories category = itemService.getCategory(categoryID);
+        if (category != null) {
+            category.setName(category_name);
+            category.setLogoUrl(logoUrl);
+            itemService.saveCategory(category);
+        }
+
+        return "redirect:/categories";
+    }
+
+    @GetMapping(value = "/viewAdmin/{idshka}")
+    public String viewItem(Model model, @PathVariable(name = "idshka") Long id) {
+//        Items item = DBManager.getItem(id);
+        ShopItems item = itemService.getItem(id);
+
+        model.addAttribute("item", item);
+        return "viewItemAdmin";
+    }
+
+    @PostMapping(value = "/deleteCountry")
+    public String deleteCountry(@RequestParam(name = "id", defaultValue = "0") Long id) {
+        Country country = itemService.getCountry(id);
+        if (country != null) {
+            itemService.deleteCountry(country);
+        }
+        return "redirect:/countries";
+    }
+
+    @PostMapping(value = "/deleteCategory")
+    public String deleteCategory(@RequestParam(name = "id", defaultValue = "0") Long id) {
+        Categories category = itemService.getCategory(id);
+        if (category != null) {
+            itemService.deleteCategory(category);
+        }
+        return "redirect:/categories";
+    }
+
+    @PostMapping(value = "/deleteBrand")
+    public String deleteBrand(@RequestParam(name = "id", defaultValue = "0") Long id) {
+        Brands brand = itemService.getBrand(id);
+        if (brand != null) {
+            itemService.deleteBrand(brand);
+        }
+        return "redirect:/brands";
     }
 }

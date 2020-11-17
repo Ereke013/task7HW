@@ -45,43 +45,40 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
                                 <a th:href="@{'/'}" style="color: black">
-                                    <i class="fas fa-shopping-cart text-center mr-2"></i> <span th:text="#{label.allItems}"></span>
+                                    <i class="fas fa-shopping-cart text-center mr-2"></i> <span th:text="#{label.allItems}" style="font-size: 16px; font-weight: bold"></span>
 
                                 </a>
                             </li>
-                            <li class="list-group-item" >
-                                <a href="#" style="color: black">
-                                    <i class="fas fa-mobile-alt text-center ml-1 mr-2"></i> <span th:text="#{label.phones}"></span>
+                            <li class="list-group-item" th:each="cat : ${categories}">
+                                <form th:action="@{'/by'}" method="post">
+                                    <input type="hidden" th:value="${cat.id}" name="idCategoria">
+                                    <button style="padding: 0; border: 0; outline: none; background: none;color: black; font-size: 16px; font-weight: bold">
+                                        <span class="text-center"><i th:class="${cat.logoUrl}"></i></span> <span class="ml-2" th:text="${cat.getName()}"></span>
+                                    </button>
+                                </form>
+                            </li>
 
-                                </a>
-                            </li>
-                            <!--                            <li class="list-group-item"><a href="#"><span th:text="#{label.laptops}"></span> <i-->
-                            <!--                                    class="fas fa-laptop ml-2"></i></a></li>-->
-                            <!--                            <li class="list-group-item"><a href="#"><span th:text="#{label.watches}"></span> <i-->
-                            <!--                                    class="fas fa-clock ml-2"></i></a></li>-->
-                            <li class="list-group-item" >
-                                <a href="#" style="color: black">
-                                    <i class="fas fa-tv text-center mr-2"></i> <span th:text="#{label.televisions}"></span>
+<!--                            <li class="list-group-item" >-->
+<!--                                <a href="#" style="color: black">-->
+<!--                                    <i class="fas fa-tv text-center mr-2"></i> <span th:text="#{label.televisions}"></span>-->
 
-                                </a>
-                            </li>
-                            <li class="list-group-item" >
-                                <a href="#" style="color: black">
-                                    <i class="fas fa-gamepad text-center mr-2"></i><span th:text="#{label.gameConsoles}"></span>
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <a href="#" style="color: black">-->
+<!--                                    <i class="fas fa-gamepad text-center mr-2"></i><span th:text="#{label.gameConsoles}"></span>-->
 
-                                </a>
-                            </li>
-                            <li class="list-group-item" >
-                                <a href="#" style="color: black">
-                                    <i class="fas fa-luggage-cart mr-2"></i> <span th:text="#{label.other}"></span>
-                                </a>
-                            </li>
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                            <li class="list-group-item" >-->
+<!--                                <a href="#" style="color: black">-->
+<!--                                    <i class="fas fa-luggage-cart mr-2"></i> <span th:text="#{label.other}" style="font-size: 16px; font-weight: bold"></span>-->
+<!--                                </a>-->
+<!--                            </li>-->
                         </ul>
                     </div>
 
 <!--                    brands-->
-                    <a href="/editBrands" type="button" class="btn btn-success mt-3"><i class="fas fa-edit"></i> <span th:text="#{button.Edit}"></span>
-                    </a>
                     <div class="card mt-3">
                         <div class="card-header" style="background-color: #156145">
                             <strong style="color: white" th:text="#{label.brands}"></strong>

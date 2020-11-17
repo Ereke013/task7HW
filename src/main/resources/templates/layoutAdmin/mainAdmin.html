@@ -22,16 +22,10 @@
         <script th:src="@{'https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'}"></script>
         <script th:src="@{'https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js'}"></script>
         <script th:src="@{'https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js'}"></script>
-        <style>
-            /* Make the image fully responsive */
-            .carousel-inner img {
-                width: 100%;
-                height: 100%;
-            }
-        </style>
+
     </head>
     <body>
-        <div class="container-fluid" th:insert="~{layout/navbar}">
+        <div class="container-fluid" th:insert="~{layoutAdmin/navbarAdmin}">
 
         </div>
         <div class="container" style="min-height: 600px">
@@ -44,25 +38,25 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <a th:href="@{'/'}" style="color: black">
+                                <a th:href="@{'/admin'}" style="color: black">
                                     <i class="fas fa-shopping-cart text-center mr-2"></i> <span th:text="#{label.productItems}"></span>
 
                                 </a>
                             </li>
                             <li class="list-group-item" >
-                                <a href="#" style="color: black">
-                                    <i class="fas fa-globe-africa text-center ml-1 mr-2"></i> <span th:text="#{label.countries}"></span>
+                                <a th:href="@{'/countries'}" style="color: black">
+                                    <i class="fas fa-globe-africa text-center mr-2"></i> <span th:text="#{label.countries}"></span>
 
                                 </a>
                             </li>
                             <li class="list-group-item" >
-                                <a href="#" style="color: black">
+                                <a th:href="@{'/brands'}" style="color: black">
                                     <i class="far fa-copyright text-center mr-2"></i> <span th:text="#{label.brands}"></span>
 
                                 </a>
                             </li>
                             <li class="list-group-item" >
-                                <a href="#" style="color: black">
+                                <a th:href="@{'/categories'}" style="color: black">
                                     <i class="fas fa-layer-group text-center mr-2"></i><span th:text="#{label.categories}"></span>
 
                                 </a>
@@ -71,7 +65,7 @@
                     </div>
                 </div>
 
-                <div class="col-sm-9" layout:fragment="site_content">
+                <div class="col-sm-9" layout:fragment="site_contentAdmin">
 
                 </div>
             </div>

@@ -1,9 +1,11 @@
 package com.example.springproject.task7HW.services.impl;
 
 import com.example.springproject.task7HW.entities.Brands;
+import com.example.springproject.task7HW.entities.Categories;
 import com.example.springproject.task7HW.entities.Country;
 import com.example.springproject.task7HW.entities.ShopItems;
 import com.example.springproject.task7HW.repositories.BrandsRepository;
+import com.example.springproject.task7HW.repositories.CategoryRepository;
 import com.example.springproject.task7HW.repositories.CountryRepository;
 import com.example.springproject.task7HW.repositories.ShopItemRepository;
 import com.example.springproject.task7HW.services.ItemService;
@@ -23,6 +25,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private BrandsRepository brandsRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public ShopItems addItem(ShopItems items) {
@@ -137,5 +142,45 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ShopItems> getItemsByBrandsAndByNameAndPriceBetweenOrderByPriceAsc(Brands brand, String name, double price1, double price2) {
         return shopItemRepository.findAllByBrandsAndNameContainingAndPriceIsBetweenOrderByPriceAsc(brand,name,price1,price2);
+    }
+
+    @Override
+    public Categories addCategory(Categories category) {
+        return categoryRepository.save(category);
+    }
+
+    @Override
+    public List<Categories> getAllCategories() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
+    public Categories getCategory(Long id) {
+        return categoryRepository.getOne(id);
+    }
+
+    @Override
+    public Categories saveCategory(Categories category) {
+        return categoryRepository.save(category);
+    }
+
+    @Override
+    public List<ShopItems> getAllByCategories(Categories category) {
+        return shopItemRepository.findAllByCategories(category);
+    }
+
+    @Override
+    public void deleteCountry(Country country) {
+        countryRepository.delete(country);
+    }
+
+    @Override
+    public void deleteBrand(Brands brand) {
+        brandsRepository.delete(brand);
+    }
+
+    @Override
+    public void deleteCategory(Categories category) {
+        categoryRepository.delete(category);
     }
 }
