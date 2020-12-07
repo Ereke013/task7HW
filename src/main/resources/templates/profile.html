@@ -6,6 +6,24 @@
     <div class="row mt-5">
         <div class="col-12">
             <h3 class="display-3 text-center">Welcome <span th:text="${currentUser.fullName}"></span></h3>
+
+            <div class="row">
+                <div class="col-6 offset-3">
+                    <img th:src="@{'/viewphoto/'+${currentUser.userAvatar}}" class="my-3" style="width: 100%;">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6 offset-3">
+                    <form th:action="@{'/uploadavatar'}" method="post" enctype="multipart/form-data">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" name="user_ava" id="customFile">
+                            <label class="custom-file-label" for="customFile" th:text="#{button.chooseFile}"></label>
+                            <button class="btn btn-success mt-2" th:text="#{button.uploadFile}"></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div>
                 <form th:action="@{'/saveUserProfile'}" method="post">
                     <h4 style="text-align: center; margin-top: 10%;">Change Data</h4>
