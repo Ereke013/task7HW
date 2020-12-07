@@ -28,16 +28,16 @@
                 <input type="hidden" name="id" th:value=" ${users.getId()}">
                 <div class="form-group">
                     <label th:text="#{label.old_password}">OLD PASSWORD</label>
-                    <input type="password" name="user_old_password" class="form-control" required>
+                    <input type="password" name="user_old_password" placeholder="Old Password..." class="form-control" required>
                 </div>
 
                 <div class="form-group">
                     <label th:text="#{label.new_password}"></label>
-                    <input type="password" name="new_password" class="form-control" required>
+                    <input type="password" name="new_password" placeholder="New Password..." class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label th:text="#{label.re_password}"></label>
-                    <input type="password" name="re_new_password" class="form-control" required>
+                    <input type="password" name="re_new_password" placeholder="Re-New Password..." class="form-control" required>
                 </div>
                 <div class="form-group float-right">
                     <button type="submit" class="btn btn-success" ><i class="fas fa-save mr-2"></i><span th:text="#{button.save}"></span></button>

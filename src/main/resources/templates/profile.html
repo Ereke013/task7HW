@@ -12,15 +12,14 @@
                     <input type="hidden" name="id" th:value=" ${currentUser.getId()}">
                     <div class="form-group">
                         <label th:text="#{label.full_name}"></label>
-                        <input type="text" name="full_name" class="form-control" th:value="${currentUser.getFullName()}" required>
+                        <input type="text" name="full_name" class="form-control" placeholder="Full Name..." th:value="${currentUser.getFullName()}" required>
                     </div>
                     <div class="form-group">
                         <label th:text="#{label.email}"></label>
-                        <input type="email" name="email" class="form-control" th:value="${currentUser.getEmail()}" required>
+                        <input type="email" name="email" class="form-control" placeholder="Email..." th:value="${currentUser.getEmail()}" required>
                     </div>
                     <div class="form-group float-right">
                         <button type="submit" class="btn btn-success" ><i class="fas fa-save mr-2"></i><span th:text="#{button.save}"></span></button>
-                        <button type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash-alt mr-2"></i><span th:text="#{button.delete}"></span>
                         </button>
                     </div>
                 </form>
@@ -30,20 +29,19 @@
                 <input type="hidden" name="id" th:value=" ${currentUser.getId()}">
                 <div class="form-group">
                     <label th:text="#{label.old_password}">OLD PASSWORD</label>
-                    <input type="password" name="user_old_password" class="form-control" required>
+                    <input type="password" name="user_old_password" class="form-control" placeholder="Old Password..." required>
                 </div>
 
                 <div class="form-group">
                     <label th:text="#{label.new_password}"></label>
-                    <input type="password" name="new_password" class="form-control" required>
+                    <input type="password" name="new_password" class="form-control" placeholder="New Password..." required>
                 </div>
                 <div class="form-group">
                     <label th:text="#{label.re_password}"></label>
-                    <input type="password" name="re_new_password" class="form-control" required>
+                    <input type="password" name="re_new_password" class="form-control" placeholder="Re-New Password..." required>
                 </div>
                 <div class="form-group float-right">
                     <button type="submit" class="btn btn-success" ><i class="fas fa-save mr-2"></i><span th:text="#{button.save}"></span></button>
-                    <button type="button" class="btn btn-danger ml-2" data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash-alt mr-2"></i><span th:text="#{button.delete}"></span>
                     </button>
                 </div>
             </form>
