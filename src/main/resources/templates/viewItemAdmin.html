@@ -17,6 +17,14 @@
                     <button style="padding: 0; border: 0; outline: none; background: none;color: #005cbf; font-size: 14px; font-weight: bold" type="button" name="brand_id" th:value="${item.brands.id}"
                             th:text="${item.brands!=null ? item.brands.name + ', ' + item.brands.countries.name : '------'}"></button>
                 </h6>
+            <div class="col-6 offset-3" style="border: 3px solid black;">
+                <img th:src="@{'/viewpicture/'+${picturesOne.url}}" style="width: 100%">
+            </div>
+            <div class="row mt-5">
+                <div class="col-2" style="" th:each="pp: ${pictures}">
+                    <img th:src="@{'/viewpicture/'+${pp.url}}" style="width: 100px">
+                </div>
+            </div>
 <!--            </form>-->
         </div>
         <div class="card-footer">

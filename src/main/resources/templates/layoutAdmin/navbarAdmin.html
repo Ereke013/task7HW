@@ -20,8 +20,10 @@
                     <a class="nav-link" href="?lng=kz">KAZ</a>
                 </li>
             </ul>
-
+            <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{'/profile'}"
+               th:text="${currentUser.fullName}"></a>
                 <a sec:authorize="isAuthenticated()" href="JavaScript:void(0)" onclick="document.getElementById('logoutFormId').submit()"><button class="btn btn-primary my-2 my-sm-0" type="submit" style="color: #ffffff" th:text="#{label.logout}"></button></a>
+
             <form th:action="@{'/logout'}" method="post" id ="logoutFormId" sec:authorize="isAuthenticated()"></form>
         </div>
     </div>

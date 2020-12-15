@@ -1,10 +1,7 @@
 package com.example.springproject.task7HW.services;
 
 import com.example.springproject.task7HW.db.ShopItem;
-import com.example.springproject.task7HW.entities.Brands;
-import com.example.springproject.task7HW.entities.Categories;
-import com.example.springproject.task7HW.entities.Country;
-import com.example.springproject.task7HW.entities.ShopItems;
+import com.example.springproject.task7HW.entities.*;
 
 import java.util.List;
 
@@ -44,4 +41,19 @@ public interface ItemService {
     void deleteCategory(Categories category);
     Categories addCategory(Categories category);
 
+    List<Pictures> getAllPictures();
+    Pictures savePicture(Pictures picture);
+    Pictures getPicture(Long id);
+    void deletePicture(Pictures picture);
+    Pictures addPicture(Pictures picture);
+
+    List<Pictures> findAllByItems(ShopItems items);
+    List<Pictures> addItemListPic(List<Pictures> pictures);
+    List<Pictures> getItemPictures(ShopItems item);
+
+    List<Baskets> getAllBasket();
+    Baskets saveBasket(Baskets basket);
+    Baskets getBaskets(Long id);
+    void deleteBaskets(Baskets basket);
+    Baskets addBaskets(Baskets basket);
 }

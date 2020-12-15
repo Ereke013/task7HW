@@ -9,9 +9,11 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <a class="btn btn-secondary"  th:href="@{'/admin'}" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')">ADMIN</a>
+        <a class="btn btn-secondary mr-2"  th:href="@{'/admin'}" sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')">ADMIN</a>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent ">
+
+
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <a class="nav-link" href="?lng=en">ENG</a>
@@ -23,6 +25,7 @@
                     <a class="nav-link" href="?lng=kz">KAZ</a>
                 </li>
             </ul>
+            <a class="btn btn-secondary mr-2" th:href="@{'/baskets'}" ><i class="fas fa-shopping-basket"></i>Basket [<span th:text="${basket}"></span>]</a>
 
             <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{'/profile'}"
                th:text="${currentUser.fullName}"></a>

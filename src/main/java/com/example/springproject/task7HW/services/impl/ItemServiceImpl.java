@@ -1,13 +1,7 @@
 package com.example.springproject.task7HW.services.impl;
 
-import com.example.springproject.task7HW.entities.Brands;
-import com.example.springproject.task7HW.entities.Categories;
-import com.example.springproject.task7HW.entities.Country;
-import com.example.springproject.task7HW.entities.ShopItems;
-import com.example.springproject.task7HW.repositories.BrandsRepository;
-import com.example.springproject.task7HW.repositories.CategoryRepository;
-import com.example.springproject.task7HW.repositories.CountryRepository;
-import com.example.springproject.task7HW.repositories.ShopItemRepository;
+import com.example.springproject.task7HW.entities.*;
+import com.example.springproject.task7HW.repositories.*;
 import com.example.springproject.task7HW.services.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +22,12 @@ public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private PictureRepository pictureRepository;
+
+    @Autowired
+    private BasketsRepository basketsRepository;
 
     @Override
     public ShopItems addItem(ShopItems items) {
@@ -182,5 +182,70 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public void deleteCategory(Categories category) {
         categoryRepository.delete(category);
+    }
+
+    @Override
+    public List<Pictures> getAllPictures() {
+        return pictureRepository.findAll();
+    }
+
+    @Override
+    public Pictures savePicture(Pictures picture) {
+        return pictureRepository.save(picture);
+    }
+
+    @Override
+    public Pictures getPicture(Long id) {
+        return pictureRepository.getOne(id);
+    }
+
+    @Override
+    public void deletePicture(Pictures picture) {
+        pictureRepository.delete(picture);
+    }
+
+    @Override
+    public Pictures addPicture(Pictures picture) {
+        return pictureRepository.save(picture);
+    }
+
+    @Override
+    public List<Pictures> findAllByItems(ShopItems items) {
+        return pictureRepository.findAllByItems(items);
+    }
+
+    @Override
+    public List<Pictures> addItemListPic(List<Pictures> pictures) {
+        return pictureRepository.saveAll(pictures);
+    }
+
+    @Override
+    public List<Pictures> getItemPictures(ShopItems item) {
+        return pictureRepository.findAllByItems(item);
+    }
+
+    @Override
+    public List<Baskets> getAllBasket() {
+        return basketsRepository.findAll();
+    }
+
+    @Override
+    public Baskets saveBasket(Baskets basket) {
+        return basketsRepository.save(basket);
+    }
+
+    @Override
+    public Baskets getBaskets(Long id) {
+        return basketsRepository.getOne(id);
+    }
+
+    @Override
+    public void deleteBaskets(Baskets basket) {
+        basketsRepository.delete(basket);
+    }
+
+    @Override
+    public Baskets addBaskets(Baskets basket) {
+        return basketsRepository.save(basket);
     }
 }

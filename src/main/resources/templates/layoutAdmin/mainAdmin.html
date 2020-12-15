@@ -72,6 +72,11 @@
                                     <i class="fas fa-users text-center mr-2"></i><span th:text="#{label.role}"></span>
                                 </a>
                             </li>
+                            <li class="list-group-item" >
+                                <a th:href="@{'/allShops'}" sec:authorize="hasAnyRole('ROLE_ADMIN')" style="color: black">
+                                    <i class="fas fa-users text-center mr-2"></i><span th:text="#{label.allShops}"></span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
