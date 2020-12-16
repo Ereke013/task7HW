@@ -6,25 +6,27 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "t_pictures")
 @Data
+@Table(name = "t_comments")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Pictures {
+public class Comments {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url")
-    private String url;
+    @Column(name = "comment")
+    private String comment;
 
-    @Column(name = "addedDate")
+    @Column(name = "addDate")
     private Date addedDate;
 
     @ManyToOne
     private ShopItems items;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Users author;
 }

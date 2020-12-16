@@ -43,9 +43,9 @@ public class ShopItems {
     @Column(name = "inTopPage")
     private boolean inTopPage;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Brands brands;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     List<Categories> categories;
 }

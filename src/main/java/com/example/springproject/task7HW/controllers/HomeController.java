@@ -2,6 +2,7 @@ package com.example.springproject.task7HW.controllers;
 
 
 import com.example.springproject.task7HW.entities.*;
+import com.example.springproject.task7HW.services.CommentService;
 import com.example.springproject.task7HW.services.ItemService;
 import com.example.springproject.task7HW.services.UserService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -42,6 +43,9 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -175,8 +179,26 @@ public class HomeController {
 
         ShopItems item = itemService.getItem(id);
         model.addAttribute("item", item);
+
+        List<Comments> comments = commentService.getAllCommentsByItem(item);
+        model.addAttribute("comments", comments);
+
+        Users users = getUserData();
+        if(users!=null){
+            boolean bb = true;
+            for(int i = 0;i<users.getRoles().size();i++){
+                if(users.getRoles().get(i).getRole().equals("ROLE_ADMIN") || users.getRoles().get(i).getRole().equals("ROLE_MODERATOR")){
+                    bb=false;
+                    model.addAttribute("check",bb);
+                }
+            }
+            model.addAttribute("check",bb);
+        }
+
         return "view";
     }
+
+
 
     @GetMapping(value = "/details/{idshka}")
     public String details(Model model, @PathVariable(name = "idshka") Long id) {
@@ -745,6 +767,21 @@ public class HomeController {
         model.addAttribute("picturesOne", pictures.get(0));
         model.addAttribute("currentUser", getUserData());
 
+        List<Comments> comments = commentService.getAllCommentsByItem(item);
+        model.addAttribute("comments", comments);
+
+        Users users = getUserData();
+        if(users!=null){
+            boolean bb = true;
+            for(int i = 0;i<users.getRoles().size();i++){
+                if(users.getRoles().get(i).getRole().equals("ROLE_ADMIN") || users.getRoles().get(i).getRole().equals("ROLE_MODERATOR")){
+                    bb=false;
+                    model.addAttribute("check",bb);
+                }
+            }
+            model.addAttribute("check",bb);
+        }
+
         return "viewItemAdmin";
     }
 
@@ -942,13 +979,13 @@ public class HomeController {
     @PostMapping(value = "/saveUserPassword")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public String saveUserPassword(@RequestParam(name = "user_old_password", defaultValue = " ") String user_old_password,
-                           @RequestParam(name = "id", defaultValue = "0") Long userID,
-                           @RequestParam(name = "new_password", defaultValue = " ") String new_password,
-                           @RequestParam(name = "re_new_password", defaultValue = "no email") String re_new_password) {
+                                   @RequestParam(name = "id", defaultValue = "0") Long userID,
+                                   @RequestParam(name = "new_password", defaultValue = " ") String new_password,
+                                   @RequestParam(name = "re_new_password", defaultValue = "no email") String re_new_password) {
         Users myUser = userService.getUsers(userID);
         if (new_password.equals(re_new_password)) {
 
-            if(passwordEncoder.matches(user_old_password,myUser.getPassword())){
+            if (passwordEncoder.matches(user_old_password, myUser.getPassword())) {
                 myUser.setPassword(new_password);
                 userService.updatePassword(myUser);
                 return "redirect:/users?success";
@@ -1082,13 +1119,13 @@ public class HomeController {
     @PostMapping(value = "/profileSave")
     @PreAuthorize("isAuthenticated()")
     public String profileSave(@RequestParam(name = "user_old_password", defaultValue = " ") String user_old_password,
-                                   @RequestParam(name = "id", defaultValue = "0") Long userID,
-                                   @RequestParam(name = "new_password", defaultValue = " ") String new_password,
-                                   @RequestParam(name = "re_new_password", defaultValue = "no email") String re_new_password) {
+                              @RequestParam(name = "id", defaultValue = "0") Long userID,
+                              @RequestParam(name = "new_password", defaultValue = " ") String new_password,
+                              @RequestParam(name = "re_new_password", defaultValue = "no email") String re_new_password) {
         Users myUser = userService.getUsers(userID);
         if (new_password.equals(re_new_password)) {
 
-            if(passwordEncoder.matches(user_old_password,myUser.getPassword())){
+            if (passwordEncoder.matches(user_old_password, myUser.getPassword())) {
                 myUser.setPassword(new_password);
                 userService.updatePassword(myUser);
                 return "redirect:/profile?success";
@@ -1099,8 +1136,8 @@ public class HomeController {
 
     @PostMapping(value = "/saveUserProfile")
     public String saveUserProfile(@RequestParam(name = "full_name", defaultValue = "no name") String full_name,
-                           @RequestParam(name = "id", defaultValue = "0") Long userID,
-                           @RequestParam(name = "email", defaultValue = "no email") String email) {
+                                  @RequestParam(name = "id", defaultValue = "0") Long userID,
+                                  @RequestParam(name = "email", defaultValue = "no email") String email) {
         Users users = userService.getUsers(userID);
         if (users != null) {
             users.setFullName(full_name);
@@ -1114,14 +1151,14 @@ public class HomeController {
     @PostMapping(value = "/uploadavatar")
     @PreAuthorize("isAuthenticated()")
     public String uploadAvatar(@RequestParam(name = "user_ava") MultipartFile file) {
-        if(file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png")) {
+        if (file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png")) {
 
             try {
                 Users currentUser = getUserData();
-                String picName = DigestUtils.sha1Hex("avatar_"+currentUser.getId()+"_!Picture");
+                String picName = DigestUtils.sha1Hex("avatar_" + currentUser.getId() + "_!Picture");
 
                 byte[] bytes = file.getBytes();
-                Path path = Paths.get(uploadPath +picName +".jpg");
+                Path path = Paths.get(uploadPath + picName + ".jpg");
                 Files.write(path, bytes);
 
                 currentUser.setUserAvatar(picName);
@@ -1138,21 +1175,21 @@ public class HomeController {
     @GetMapping(value = "/viewphoto/{url}", produces = {MediaType.IMAGE_JPEG_VALUE})
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody
-    byte[] viewProfilePhoto(@PathVariable(name = "url") String url)throws IOException {
-        String pictureURL = viewPath+defaultPicture;
+    byte[] viewProfilePhoto(@PathVariable(name = "url") String url) throws IOException {
+        String pictureURL = viewPath + defaultPicture;
 
-        if(url !=null){
-            pictureURL = viewPath+url+".jpg";
+        if (url != null) {
+            pictureURL = viewPath + url + ".jpg";
         }
 
         InputStream in;
 
         try {
             ClassPathResource resource = new ClassPathResource(pictureURL);
-            in=resource.getInputStream();
-        }catch (Exception e){
-            ClassPathResource resource = new ClassPathResource(viewPath+defaultPicture);
-            in=resource.getInputStream();
+            in = resource.getInputStream();
+        } catch (Exception e) {
+            ClassPathResource resource = new ClassPathResource(viewPath + defaultPicture);
+            in = resource.getInputStream();
             e.printStackTrace();
         }
         return IOUtils.toByteArray(in);
@@ -1162,17 +1199,17 @@ public class HomeController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
     public String uploadPicture(@RequestParam(name = "item_picture") MultipartFile file,
                                 @RequestParam(name = "item_id") Long item_id) {
-        if(file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png")) {
+        if (file.getContentType().equals("image/jpeg") || file.getContentType().equals("image/png")) {
 
             try {
 //                Pictures pictures = getUserData();
                 Random rand = new Random();
                 ShopItems item = itemService.getItem(item_id);
-                int randInt= rand.nextInt(1000);
-                String picName = DigestUtils.sha1Hex("picture_"+randInt+"_!Picture");
+                int randInt = rand.nextInt(1000);
+                String picName = DigestUtils.sha1Hex("picture_" + randInt + "_!Picture");
 
                 byte[] bytes = file.getBytes();
-                Path path = Paths.get(uploadPath +picName +".jpg");
+                Path path = Paths.get(uploadPath + picName + ".jpg");
                 Files.write(path, bytes);
 
                 java.util.Date utilDate = new java.util.Date();
@@ -1180,7 +1217,7 @@ public class HomeController {
 
 
                 List<Pictures> picturesList = new ArrayList<>();
-                picturesList.add(new Pictures(null,picName,sqlDate,item));
+                picturesList.add(new Pictures(null, picName, sqlDate, item));
                 itemService.addItemListPic(picturesList);
 //                currentUser.setUserAvatar(picName);
 //                userService.saveUser(currentUser);
@@ -1195,20 +1232,21 @@ public class HomeController {
 
     @GetMapping(value = "/viewpicture/{url}", produces = {MediaType.IMAGE_JPEG_VALUE})
     @PreAuthorize("isAuthenticated()")
-    public @ResponseBody byte[] viewItemPhoto(@PathVariable(name = "url") String url) throws IOException {
+    public @ResponseBody
+    byte[] viewItemPhoto(@PathVariable(name = "url") String url) throws IOException {
 
-        String pictureURL = viewPath+defaultPicture;
+        String pictureURL = viewPath + defaultPicture;
 
-        if(url!=null && !url.equals("null")){
-            pictureURL = viewPath+url+".jpg";
+        if (url != null && !url.equals("null")) {
+            pictureURL = viewPath + url + ".jpg";
         }
         InputStream in;
         try {
             ClassPathResource resource = new ClassPathResource(pictureURL);
             in = resource.getInputStream();
 
-        }catch (Exception e){
-            ClassPathResource resource = new ClassPathResource(viewPath+defaultPicture);
+        } catch (Exception e) {
+            ClassPathResource resource = new ClassPathResource(viewPath + defaultPicture);
             in = resource.getInputStream();
             e.printStackTrace();
         }
@@ -1216,25 +1254,24 @@ public class HomeController {
     }
 
 
-
     @GetMapping(value = "/addToBasket/{idshka}")
-    public String addToBasket(Model model, @PathVariable(name = "idshka") Long id, HttpSession session){
+    public String addToBasket(Model model, @PathVariable(name = "idshka") Long id, HttpSession session) {
         ShopItems items = itemService.getItem(id);
-        if(items!=null){
+        if (items != null) {
             java.util.Date utilDate = new java.util.Date();
             java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
             boolean ch = true;
-            for(Baskets baskets : baskets){
-                if(baskets.getItems().getId().equals(items.getId())){
+            for (Baskets baskets : baskets) {
+                if (baskets.getItems().getId().equals(items.getId())) {
                     ch = false;
                 }
             }
-            if(ch) {
-                baskets.add(new Baskets(b_id, sqlDate,1, items));
+            if (ch) {
+                baskets.add(new Baskets(b_id, sqlDate, 1, items));
                 b_id++;
                 session.setAttribute("noAuthorizedBasket", baskets);
             }
-            return "redirect:/view/"+id;
+            return "redirect:/view/" + id;
         }
         return "redirect:/";
     }
@@ -1249,18 +1286,18 @@ public class HomeController {
         if (pic != null) {
             itemService.deletePicture(pic);
         }
-        return "redirect:/details/"+itemId;
+        return "redirect:/details/" + itemId;
     }
 
     @GetMapping(value = "/baskets")
-    public String baskets(Model model){
+    public String baskets(Model model) {
 
         model.addAttribute("basketList", baskets);
         model.addAttribute("currentUser", getUserData());
 
         double sum = 0;
-        for(Baskets baskets: baskets){
-            sum += (baskets.getItems().getPrice()*baskets.getAmount());
+        for (Baskets baskets : baskets) {
+            sum += (baskets.getItems().getPrice() * baskets.getAmount());
         }
         model.addAttribute("totalSum", sum);
         model.addAttribute("basket", baskets.size());
@@ -1271,7 +1308,7 @@ public class HomeController {
         return "basket";
     }
 
-//    @PostMapping(value = "/increaseItem")
+    //    @PostMapping(value = "/increaseItem")
 //    public String increaseItem(Model model,
 //                            @RequestParam(name = "it_id") Long itemId
 //    ) {
@@ -1289,10 +1326,10 @@ public class HomeController {
     public String increaseItem(@RequestParam(name = "it_id") Long itemId, HttpSession session) {
 
         int i = 0;
-        for(Baskets baskets1: baskets){
-            if(baskets1.getItems().getId().equals(itemId)){
-                baskets1.setAmount(baskets1.getAmount()+1);
-                baskets.set(i,baskets1);
+        for (Baskets baskets1 : baskets) {
+            if (baskets1.getItems().getId().equals(itemId)) {
+                baskets1.setAmount(baskets1.getAmount() + 1);
+                baskets.set(i, baskets1);
             }
             i++;
         }
@@ -1308,20 +1345,19 @@ public class HomeController {
         int i = 0;
         int c = 0;
         boolean check = false;
-        for(Baskets baskets1: baskets){
-            if(baskets1.getItems().getId().equals(itemId)){
-                baskets1.setAmount(baskets1.getAmount()-1);
-                if(baskets1.getAmount() <= 0){
+        for (Baskets baskets1 : baskets) {
+            if (baskets1.getItems().getId().equals(itemId)) {
+                baskets1.setAmount(baskets1.getAmount() - 1);
+                if (baskets1.getAmount() <= 0) {
                     check = true;
                     c = i;
-                }
-                else {
-                    baskets.set(i,baskets1);
+                } else {
+                    baskets.set(i, baskets1);
                 }
             }
             i++;
         }
-        if(check){
+        if (check) {
             baskets.remove(c);
         }
 
@@ -1342,18 +1378,18 @@ public class HomeController {
     }
 
     @PostMapping(value = "/checkIn")
-    public String checkIn(HttpSession session){
+    public String checkIn(HttpSession session) {
         ArrayList<Baskets> basketsSess = (ArrayList<Baskets>) session.getAttribute("noAuthorizedBasket");
-        System.out.println("size = " +basketsSess.size());
+        System.out.println("size = " + basketsSess.size());
 
         boolean ch = false;
 
-        if(basketsSess.size() > 0){
+        if (basketsSess.size() > 0) {
             List<Baskets> bazBasket = itemService.getAllBasket();
-            if(bazBasket == null){
+            if (bazBasket == null) {
                 bazBasket = new ArrayList<>();
             }
-            for (Baskets basket: baskets){
+            for (Baskets basket : baskets) {
                 ch = false;
                 basket.setId(null);
                 java.util.Date utilDate = new java.util.Date();
@@ -1365,20 +1401,20 @@ public class HomeController {
                 ch = true;
             }
         }
-        if(ch){
+        if (ch) {
             baskets.clear();
 
             ArrayList<Baskets> basketsSeess = (ArrayList<Baskets>) session.getAttribute("noAuthorizedBasket");
             session.setAttribute("noAuthorizedBasket", basketsSeess);
             return "redirect:/baskets?sucess";
-        }
-        else
+        } else
             return "redirect:/baskets?error";
 //        return "redirect:/clearAll";
     }
+
     @GetMapping(value = "/allShops")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public String allShops(Model model){
+    public String allShops(Model model) {
 
         List<Baskets> baskets = itemService.getAllBasket();
         List<ShopItems> shopItems = itemService.getAllItems();
@@ -1402,5 +1438,85 @@ public class HomeController {
         model.addAttribute("currentUser", getUserData());
 
         return "detailsBaskets";
+    }
+
+    @PostMapping(value = "/addComment")
+    @PreAuthorize("isAuthenticated()")
+    public String addComment(@RequestParam(name = "userr_id", defaultValue = "0") Long user_id,
+                             @RequestParam(name = "item_id", defaultValue = "0") Long item_id,
+                             @RequestParam(name = "comment", defaultValue = "no comment") String comment,
+                             Model model) {
+        ShopItems item = itemService.getItem(item_id);
+        Users user = userService.getUsers(user_id);
+        if (user != null) {
+            if (item != null) {
+
+                List<Comments> comments = commentService.getAllCommentsByItem(item);
+                if (comments == null) {
+                    comments = new ArrayList<>();
+                }
+                java.util.Date utilDate = new java.util.Date();
+                java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                java.util.Date date = new java.util.Date(Calendar.getInstance().getTime().getTime());
+                Comments comment1 = new Comments(null, comment, sqlDate, item, user);
+                comments.add(comment1);
+                commentService.saveComment(comment1);
+
+                model.addAttribute("currentUser", getUserData());
+                return "redirect:/view/" + item_id + "?success";
+            }
+        }
+
+        return "redirect:/view/" + item_id + "?error";
+    }
+
+    @PostMapping(value = "/saveMessage")
+    @PreAuthorize("isAuthenticated()")
+    public String saveMessage(@RequestParam(name = "author_id", defaultValue = "0") Long user_id,
+                              @RequestParam(name = "item_ed_id", defaultValue = "0") Long item_id,
+                              @RequestParam(name = "com_id", defaultValue = "0") Long com_id,
+                              @RequestParam(name = "comment", defaultValue = "no comment") String comment,
+                              Model model) {
+        Comments comments = commentService.getComment(com_id);
+        ShopItems item = itemService.getItem(item_id);
+        Users user = userService.getUsers(user_id);
+        if (comments != null) {
+            comments.setComment(comment);
+            commentService.saveComment(comments);
+            model.addAttribute("currentUser", getUserData());
+            return "redirect:/view/" + item_id + "?success";
+        }
+
+        return "redirect:/view/" + item_id + "?error";
+    }
+
+    @PostMapping(value = "/deleteMesage")
+    @PreAuthorize("isAuthenticated()")
+    public String deleteComment(@RequestParam(name = "comen_id", defaultValue = "0") Long com_id,
+                                @RequestParam(name = "item_id", defaultValue = "0") Long item_id){
+
+        Comments comments = commentService.getComment(com_id);
+        if(comments!=null){
+            commentService.deleteComment(comments);
+            return "redirect:/view/"+item_id+"?success";
+        }
+
+        return "redirect:/view/"+item_id+"?error";
+    }
+
+    @PostMapping(value = "/saveMessagess")
+    @PreAuthorize("isAuthenticated()")
+    public String editMessage(@RequestParam(name = "id", defaultValue = "0") Long com_id,
+                                @RequestParam(name = "name", defaultValue = "no comment") String comment,
+                                @RequestParam(name = "itemsID", defaultValue = "0") Long item_id, Model model){
+
+        Comments comments1 = commentService.getComment(com_id);
+        if(comments1!=null){
+            comments1.setComment(comment);
+            commentService.saveComment(comments1);
+            return "redirect:/view/"+item_id+"?success";
+        }
+
+        return "redirect:/view/"+item_id+"?error";
     }
 }
